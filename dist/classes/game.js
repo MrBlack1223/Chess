@@ -114,68 +114,6 @@ export class Game {
         this.reRender = (board) => {
             this.cleanBoard(board);
             this.render(board);
-            let activePiece;
-            let fields = document.querySelectorAll('.field');
-            fields.forEach(field => {
-                field.addEventListener('dragstart', (e) => {
-                    let gameboard = this.giveGameboard;
-                    const clickedChildField = e.target;
-                    const clickedField = clickedChildField.parentElement;
-                    const coordinates = clickedField.getAttribute('data-coordinates') === null ? clickedChildField.getAttribute('data-coordinates') : clickedField.getAttribute('data-coordinates');
-                    const gameField = gameboard.find(element => element.getFieldCoordinates.x == coordinates[0] && element.getFieldCoordinates.y == coordinates[2]);
-                    if (gameField.isFieldTaken && !clickedField.classList.contains('possibleTakeField')) {
-                        activePiece = gameField.whatPieceIsOnThisField;
-                        if (activePiece.getColor === this.getActivePlayerColor) {
-                            fields = document.querySelectorAll('.field');
-                            if (activePiece.getName === 'pawn') {
-                                this.checkPossibleActions('enPassant', activePiece);
-                            }
-                            if (activePiece.getName === 'king') {
-                                this.checkPossibleActions('castle', activePiece);
-                            }
-                            this.checkPossibleActions('Move', activePiece);
-                            this.checkPossibleActions('Take', activePiece);
-                        }
-                    }
-                });
-                field.addEventListener('dragover', (e) => {
-                    e.preventDefault();
-                });
-                field.addEventListener('drop', (e) => {
-                    let gameboard = this.giveGameboard;
-                    const clickedChildField = e.target;
-                    const clickedField = clickedChildField.parentElement;
-                    const coordinates = clickedField.getAttribute('data-coordinates') === null ? clickedChildField.getAttribute('data-coordinates') : clickedField.getAttribute('data-coordinates');
-                    const gameField = gameboard.find(element => element.getFieldCoordinates.x == coordinates[0] && element.getFieldCoordinates.y == coordinates[2]);
-                    if (!gameField.isFieldTaken) {
-                        if (clickedChildField.classList.contains('possibleMoveField')) {
-                            this.makeMove(gameField, activePiece, board, 'move', false);
-                        }
-                        else if (clickedField.classList.contains('possibleTakeField')) {
-                            this.enPassant(gameField, activePiece, board);
-                        }
-                    }
-                    else if (clickedField.classList.contains('possibleTakeField')) {
-                        this.makeMove(gameField, activePiece, board, 'take', false);
-                    }
-                    if (clickedChildField.classList.contains('possibleCastleField')) {
-                        if (clickedChildField.dataset.coordinates[2] === '3') {
-                            this.castle(activePiece, 'left', board);
-                        }
-                        else if (clickedChildField.dataset.coordinates[2] === '7') {
-                            this.castle(activePiece, 'right', board);
-                        }
-                    }
-                    if (this.mat) {
-                        const winningInfo = document.querySelector('.winnigBoard');
-                        const winningInfoMessage = document.querySelector('.winningBoardInfo');
-                        winningInfo.style.animation = 'showEndScreen 2s ease 0s 1 forwards';
-                        winningInfoMessage.innerHTML += `<br><span class = 'message'>${this.check.isWhiteKingChecked ? 'Black' : 'White'} won</span>`;
-                        this.init();
-                        this.reRender(board);
-                    }
-                });
-            });
         };
         this.cleanBoard = (board) => {
             board.innerHTML = "";
